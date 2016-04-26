@@ -18,3 +18,5 @@ add_library(MachineLearningToolbox SHARED ${SOURCE_FILES})
 add_custom_command(TARGET MachineLearningToolbox
                    POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:MachineLearningToolbox> ${UNITY_PLUGIN_PATH})
+
+#set_target_properties(MachineLearningToolbox PROPERTIES SUFFIX ".bundle")
