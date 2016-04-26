@@ -11,6 +11,7 @@ ENDIF()
 set(UNITY_PLUGIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../MachineLearningUnity/Assets/Plugins)
 
 include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories("include")
 
 #add_executable(MachineLearningToolbox ${SOURCE_FILES})
 add_library(MachineLearningToolbox SHARED ${SOURCE_FILES})
