@@ -74,6 +74,12 @@ $RECYCLE.BIN/
 # IntelliJ
 */out/
 
+# Output and shared libraries
+*/bin/
+*.dll
+*.so
+*.dylib
+
 # mpeltonen/sbt-idea plugin
 */.idea_modules/
 
