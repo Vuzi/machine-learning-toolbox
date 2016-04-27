@@ -5,6 +5,8 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
+#include <perceptron.h>
+
 #ifdef _WIN32
     // Windows DLL export
     #define EXPORT extern "C" __declspec(dllexport)
@@ -13,30 +15,13 @@
     #define EXPORT
 #endif
 
-/**
- * Perceptron structure
- */
-struct perceptron {
-    unsigned n;
-    double* w;
-};
-
-typedef struct perceptron perceptron;
-
 // Exported methods
-EXPORT void linearClassificationTrainRosenblatt(double a, double* x, int* y, unsigned k, unsigned max, perceptron* p);
-EXPORT void linearClassificationTrainPLA(double a, double* x, int* y, unsigned k, unsigned max, perceptron* p);
+EXPORT perceptron* perceptronCreate(unsigned n, int type);
+EXPORT void perceptronDispose(perceptron* p);
 
-EXPORT void linearClassificationPLA(double a, int y, double* x, perceptron* p);
-EXPORT void linearClassificationRosenblatt(double a, int yt, int y, double* x, perceptron* p);
+EXPORT int perceptronGetType(perceptron* p);
 
-EXPORT int linearClassification(double* x, perceptron* p);
-
-EXPORT void deleteModel(perceptron* p);
-EXPORT perceptron* createModel(unsigned n);
-
-// 'private' methods
-double randValue(double max, double min);
-int sign(double x);
+EXPORT double perceptronClassify(perceptron* p, double* x);
+EXPORT double perceptronTrain(perceptron* p, double a, double* x, double* y, unsigned k, unsigned max);
 
 #endif //PLUGIN_H
