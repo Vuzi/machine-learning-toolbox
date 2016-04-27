@@ -2,21 +2,29 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 using System;
+using UnityEngine.UI;
 
 public class LinearClassificationLPA : MonoBehaviour {
 
+    public Text timerText;
+
     // Sphere to classify
     public GameObject[] toClassify;
-    
-    // Materials used
-    public Material blue;
-    public Material red;
 
     // Training set
     public GameObject[] reds;
     public GameObject[] blues;
 
-    private void HeavisideTest() {
+    public void ResetClassification() {
+        foreach(GameObject gameObject in toClassify) {
+            gameObject.GetComponent<Renderer>().material.color = Color.white;
+        }
+        timerText.text = "<none> ms";
+    }
+
+    public void HeavisideClassification() {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+
         // Create the perceptron
         Perceptron model = new Perceptron(2, PerceptronType.HEAVISIDE);
 
@@ -50,9 +58,15 @@ public class LinearClassificationLPA : MonoBehaviour {
             else
                 r.material.color = Color.blue;
         }
+
+        watch.Stop();
+        var elapsedMs = watch.ElapsedMilliseconds;
+        timerText.text = "" + elapsedMs + " ms";
     }
 
-    private void RosenblattTest() {
+    public void RosenblattClassification() {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+
         // Create the perceptron
         Perceptron model = new Perceptron(2, PerceptronType.ROSENBLATT);
 
@@ -86,12 +100,15 @@ public class LinearClassificationLPA : MonoBehaviour {
             else
                 r.material.color = Color.blue;
         }
+
+        watch.Stop();
+        var elapsedMs = watch.ElapsedMilliseconds;
+        timerText.text = "" + elapsedMs + " ms";
     }
 
     // Use this for initialization
     void Start () {
-        //HeavisideTest();
-        RosenblattTest();
+
     }
 
 	// Update is called once per frame
