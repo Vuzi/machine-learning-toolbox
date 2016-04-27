@@ -68,6 +68,7 @@ void linearClassificationTrainPLA(double a, double* x, int* y, unsigned k, unsig
 
         if(!error)
             break; // No error, end the training
+
     }
 }
 
@@ -96,9 +97,9 @@ void linearClassificationRosenblatt(double a, int yt, int y, double* x, perceptr
  * n  => size
  */
 int linearClassification(double* x, perceptron* p) {
-    double sum = 0;
+    double sum = 0.0;
 
-    sum += p->w[0] * 1;
+    sum += p->w[0] * 1.0;
     for(unsigned i = 0; i < p->n; i++)
         sum += p->w[i + 1] * x[i];
 
@@ -143,45 +144,72 @@ int sign(double x) {
     return (x < 0) ? -1 : 1;
 }
 
+static void testRand() {
+    cout << "Rand tests: ";
+    for (int n = 0; n < 1000; ++n) {
+        double v = randValue(1, -1);
+        assert(v >= -1 && v <= 1);
+    }
+    cout << "passed" << endl;
+}
+
+static void testPerceptron() {
+    cout << "Tests perceptron: " << endl;
+
+    for(int i = 0; i < 1000; i++) {
+        perceptron *p = createModel(2);
+
+        // Training values
+        double *x = new double[8]{-1, 1,
+                                  1, 1,
+                                  -1, -1,
+                                  1, -1};
+        int *y = new int[4]{-1,
+                            -1,
+                            1,
+                            1};
+
+        // Train our model
+        linearClassificationTrainPLA(0.1, x, y, 4, 5000, p);
+
+        double *xTest1 = new double[2]{-1, 1}; // -1
+        double *xTest2 = new double[2]{1, 1}; // -1
+        double *xTest3 = new double[2]{-1, -1}; // 1
+        double *xTest4 = new double[2]{0, -2}; // Unknown (should be 1)
+        double *xTest5 = new double[2]{0, 1.5}; // Unknown (should be -1)
+
+        assert(linearClassification(xTest1, p) == -1);
+        assert(linearClassification(xTest2, p) == -1);
+        assert(linearClassification(xTest3, p) == 1);
+        assert(linearClassification(xTest4, p) == 1);
+        assert(linearClassification(xTest5, p) == -1);
+
+        cout << "\tTest " << (i + 1) << " passed" << endl;
+
+        // Clear
+        delete[] x;
+        delete[] y;
+        delete[] xTest1;
+        delete[] xTest2;
+        delete[] xTest3;
+        delete[] xTest4;
+        delete[] xTest5;
+
+        deleteModel(p);
+    }
+    cout << "passed" << endl;
+}
+
 int main() {
     cout << "Tests" << endl;
 
     // TODO in some init method
     srand((unsigned) time(NULL));
 
-    cout << "Rand tests:" << endl;
-    for (int n = 0; n < 10; ++n) {
-        std::cout << randValue(1, -1) << ' ';
-    }
-    cout << endl;
+    testRand();
+    testPerceptron();
 
-    cout << "Tests perceptron" << endl;
-    perceptron* p = createModel(2);
-
-    // Training values
-    double* x = new double[6] { 0, 0,
-                                0, 1,
-                                1, 1 };
-    int* y = new int[3] { -1,
-                           1,
-                           1 };
-
-    // Train our model
-    linearClassificationTrainPLA(0.1, x, y, 3, 50, p);
-
-    double* xTest1 = new double[2] { 0, 0 };
-    double* xTest2 = new double[2] { 1, 0 };
-
-    assert(linearClassification(xTest1 ,p) == -1);
-    assert(linearClassification(xTest2 ,p) ==  1);
-
-    cout << "All good!" << endl;
-
-    // Clear
-    delete [] x;
-    delete [] y;
-    delete [] xTest1;
-    delete [] xTest2;
+    cout << "All test passed" << endl;
 
     /*
     Eigen::MatrixXd m(2,2);
