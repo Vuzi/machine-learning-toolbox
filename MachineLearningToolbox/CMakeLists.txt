@@ -12,11 +12,6 @@ if(NOT EIGEN3_INCLUDE_DIR)
     message(FATAL_ERROR "No environment variable EIGEN3_INCLUDE_DIR found")
 endif()
 
-# On OSX .so should be renammed to .bundle
-if(APPLE)
-    set_target_properties(MachineLearningToolbox PROPERTIES SUFFIX ".bundle")
-endif()
-
 # Unity project should be here
 set(UNITY_PLUGIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../MachineLearningUnity/Assets/Plugins)
 
@@ -32,3 +27,8 @@ add_executable(MachineLearningToolbox ${SOURCE_FILES})
 #add_custom_command(TARGET MachineLearningToolbox
 #                   POST_BUILD
 #                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:MachineLearningToolbox> ${UNITY_PLUGIN_PATH})
+
+# On OSX .so should be renammed to .bundle
+if(APPLE)
+    set_target_properties(MachineLearningToolbox PROPERTIES SUFFIX ".bundle")
+endif()

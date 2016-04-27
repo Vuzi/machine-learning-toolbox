@@ -167,7 +167,7 @@ int main() {
                            1 };
 
     // Train our model
-    linearClassificationTrainPLA(0.1, x, y, 3, 20, p);
+    linearClassificationTrainPLA(0.1, x, y, 3, 50, p);
 
     double* xTest1 = new double[2] { 0, 0 };
     double* xTest2 = new double[2] { 1, 0 };
