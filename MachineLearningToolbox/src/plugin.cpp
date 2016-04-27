@@ -156,18 +156,18 @@ static void testRand() {
 static void testPerceptron() {
     cout << "Tests perceptron: " << endl;
 
-    for(int i = 0; i < 1000; i++) {
+    for(int i = 0; i < 100; i++) {
         perceptron *p = createModel(2);
 
         // Training values
         double *x = new double[8]{-1, 1,
-                                  1, 1,
+                                   1, 1,
                                   -1, -1,
-                                  1, -1};
+                                   1, -1};
         int *y = new int[4]{-1,
                             -1,
-                            1,
-                            1};
+                             1,
+                             1};
 
         // Train our model
         linearClassificationTrainPLA(0.1, x, y, 4, 5000, p);

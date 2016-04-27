@@ -20,13 +20,13 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories("include")
 
 # Lib
-add_executable(MachineLearningToolbox ${SOURCE_FILES})
-#add_library(MachineLearningToolbox SHARED ${SOURCE_FILES})
+#add_executable(MachineLearningToolbox ${SOURCE_FILES})
+add_library(MachineLearningToolbox SHARED ${SOURCE_FILES})
 
 # Copy to the unity directory
-#add_custom_command(TARGET MachineLearningToolbox
-#                   POST_BUILD
-#                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:MachineLearningToolbox> ${UNITY_PLUGIN_PATH})
+add_custom_command(TARGET MachineLearningToolbox
+                   POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:MachineLearningToolbox> ${UNITY_PLUGIN_PATH})
 
 # On OSX .so should be renammed to .bundle
 if(APPLE)
