@@ -13,18 +13,27 @@
     #define EXPORT
 #endif
 
-// Tests
-EXPORT const char* getHelloWorld();
-EXPORT int add(int a, int b);
-EXPORT int mult(int a, int b);
-// End of tests
+/**
+ * Perceptron structure
+ */
+struct perceptron {
+    unsigned n;
+    double* w;
+};
+
+typedef struct perceptron perceptron;
 
 // Exported methods
-EXPORT double* linearClassificationRosenblatt(double a, int yt, int y, double* x, double* w, unsigned n);
-EXPORT double* linearClassificationPLA(double a, int y, double* x, double* w, unsigned n);
-EXPORT int linearClassification(double* x, double* w, unsigned n);
-EXPORT void delPerceptron(double* w);
-EXPORT double* initPerceptron(unsigned n);
+EXPORT void linearClassificationTrainRosenblatt(double a, double* x, int* y, unsigned k, unsigned max, perceptron* p);
+EXPORT void linearClassificationTrainPLA(double a, double* x, int* y, unsigned k, unsigned max, perceptron* p);
+
+EXPORT void linearClassificationPLA(double a, int y, double* x, perceptron* p);
+EXPORT void linearClassificationRosenblatt(double a, int yt, int y, double* x, perceptron* p);
+
+EXPORT int linearClassification(double* x, perceptron* p);
+
+EXPORT void deleteModel(perceptron* p);
+EXPORT perceptron* createModel(unsigned n);
 
 // 'private' methods
 double randValue(double max, double min);
