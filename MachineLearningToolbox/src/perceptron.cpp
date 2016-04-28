@@ -23,30 +23,21 @@ perceptronType perceptron::getType() {
 }
 
 double perceptron::classify(double *x) {
-    switch (type) {
-        case TYPE_HEAVISIDE:
-            return sign(classifyLinear(x));
-        case TYPE_ROSENBLATT:
-            return classifyLinear(x) > 0.0 ? 1.0 : 0.0;
-        case TYPE_REGRESSION:
-            return classifyRegression(x);
-        default:
-            return 0;
-    }
-}
-
-double perceptron::classifyLinear(double *x) {
     double sum = 0.0;
 
     sum += w[0] * 1.0;
     for(unsigned i = 0; i < n; i++)
         sum += w[i + 1] * x[i];
 
-    return sum;
-}
-
-double perceptron::classifyRegression(double *x) {
-    return 0; // TODO
+    switch (type) {
+        case TYPE_HEAVISIDE:
+            return sign(sum);
+        case TYPE_ROSENBLATT:
+            return sum > 0.0 ? 1.0 : 0.0;
+        case TYPE_REGRESSION:
+        default:
+            return sum;
+    }
 }
 
 void perceptron::train(double a, double *x, double *y, unsigned k, unsigned max) {
@@ -88,7 +79,25 @@ void perceptron::trainLinear(double a, double *x, double *y, unsigned k, unsigne
 }
 
 void perceptron::trainRegression(double a, double *x, double *y, unsigned k, unsigned max) {
-    // TODO
+    // Prepare y matrix
+    Eigen::MatrixXd yMat(k, 1);
+    for(int i = 0; i < k; i++)
+        yMat(i, 0) = y[i];
+
+    // Prepare x matrix (unfold the provided array)
+    Eigen::MatrixXd xMat(k, n + 1);
+    for(int i = 0; i < k; i++) {
+        xMat(i, 0) = 1.0;
+        for(int j = 0; j < n; j++) {
+            xMat(i, j + 1) = x[n * i + j];
+        }
+    }
+
+    Eigen::MatrixXd xMatT = xMat.transpose();
+    Eigen::MatrixXd wMat = ((xMatT * xMat).inverse() * xMatT) * yMat; // W = ((Xt * X)^-1 * Xt) * Y
+
+    // Map back to w
+    Eigen::Map<Eigen::MatrixXd>(w, n + 1, 1) = wMat;
 }
 
 double perceptron::updateModelHeaviside(double a, double y, double *x) {

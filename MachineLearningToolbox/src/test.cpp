@@ -73,6 +73,23 @@ static void testPerceptron() {
 int main() {
     cout << "Tests" << endl;
 
+    double *x = new double[8]{-1,  1,
+                              1,  1,
+                              -1, -1,
+                              1, -1};
+
+    Eigen::MatrixXd xMat(8, 1);
+    for(int i = 0; i < 8; i++)
+        xMat(i, 0) = x[i];
+
+    // Map back to x
+    Eigen::Map<Eigen::MatrixXd>(x, 8, 1) = xMat;
+
+    cout << xMat << endl;
+    cout << x[0] << endl;
+
+    return 0;
+
     // TODO in some init method
     srand((unsigned) time(NULL));
 
@@ -80,14 +97,6 @@ int main() {
     testPerceptron();
 
     cout << "All test passed" << endl;
-
-    /*
-    Eigen::MatrixXd m(2,2);
-    m(0,0) = 3;
-    m(1,0) = 2.5;
-    m(0,1) = -1;
-    m(1,1) = m(1,0) + m(0,1);
-    std::cout << m << std::endl;*/
 
     return 0;
 }

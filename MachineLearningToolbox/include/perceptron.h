@@ -6,6 +6,7 @@
 #define PERCEPTRON_H
 
 #include <utils.h>
+#include <Eigen/Dense>
 
 /**
  * Perceptron type
@@ -61,9 +62,6 @@ class perceptron {
         void train(double a, double* x, double* y, unsigned k, unsigned max);
 
     private:
-        double classifyLinear(double* x);
-        double classifyRegression(double* x);
-
         void trainLinear(double a, double* x, double* y, unsigned k, unsigned max);
         void trainRegression(double a, double* x, double* y, unsigned k, unsigned max);
 
