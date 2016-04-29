@@ -56,7 +56,7 @@ class perceptron {
          * @param a   The learning step
          * @param x   The test values, in an k * n size array
          * @param y   The k expected classification results
-         * @param k   The number of exemples
+         * @param k   The number of examples
          * @param max The maximum number of tests to performs
          */
         void train(double a, double* x, double* y, unsigned k, unsigned max);

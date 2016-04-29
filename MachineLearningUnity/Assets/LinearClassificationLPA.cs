@@ -151,14 +151,6 @@ public class LinearClassificationLPA : MonoBehaviour {
             val = (val + 1) / 2;
 
             r.material.color = new Color((float)val, 0f, (float)(1.0 - val));
-
-            /*if(val < 0) {
-                r.material.color = new Color(0f + 1 - , 0f, (float)Math.Abs(val));
-            } else {
-                r.material.color = new Color((float)val, 0f, 0f);
-            }*/
-
-            //r.material.color = new Color(val < 0 ? 0f : (float)val, 0f, val > 0 ? 0f : (float)Math.Abs(val));
             t.Translate(Vector3.up * (float)val);
         }
 
