@@ -5,6 +5,8 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
+#include <ctime>
+
 #include <perceptron.h>
 #include <perceptronMultiLayer.h>
 
@@ -13,10 +15,12 @@
     #define EXPORT extern "C" __declspec(dllexport)
 #else
     // Unix and OSX
-    #define EXPORT
+    #define EXPORT extern "C"
 #endif
 
 // Exported methods
+EXPORT void init();
+
 // Perceptron
 EXPORT perceptron* perceptronCreate(unsigned n, int type);
 EXPORT void perceptronDispose(perceptron* p);

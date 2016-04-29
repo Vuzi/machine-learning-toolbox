@@ -4,6 +4,10 @@
 
 #include <plugin.h>
 
+void init() {
+    srand((unsigned) time(NULL));
+}
+
 // Perceptron
 perceptron* perceptronCreate(unsigned n, int type) {
     return new perceptron(n, static_cast<perceptronType>(type));

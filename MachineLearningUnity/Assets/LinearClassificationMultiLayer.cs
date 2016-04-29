@@ -9,11 +9,11 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
     public Text timerText;
 
     // Sphere to classify
-    public GameObject[] toClassify;
+    GameObject[] toClassify;
 
     // Training set
-    public GameObject[] reds;
-    public GameObject[] blues;
+    GameObject[] reds;
+    GameObject[] blues;
 
     public void Reset() {
         foreach(GameObject gameObject in toClassify) {
@@ -33,7 +33,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
         var watch = System.Diagnostics.Stopwatch.StartNew();
 
         // Create the perceptron
-        PerceptronMultiLayer model = new PerceptronMultiLayer(2, new uint[] { 1, 3, 3, 1 }, PerceptronType.HEAVISIDE);
+        PerceptronMultiLayer model = new PerceptronMultiLayer(2, new uint[] { 2, 10, 10, 1 }, PerceptronType.HEAVISIDE);
 
         // Create the training values
         double[,] values = new double[reds.Length + blues.Length, 2];
@@ -53,18 +53,18 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
             expectedValues[i + reds.Length] = 1;
         }
 
-        model.Train(0.1, values, expectedValues, 5000);
+        model.Train(0.1, values, expectedValues, 500);
 
         // Use the perceptron
         foreach(GameObject gameObject in toClassify) {
             Transform t = gameObject.GetComponent<Transform>();
             Renderer r = gameObject.GetComponent<Renderer>();
 
-            double val = model.Classify(new double[] { t.position.x, t.position.z })[0];
+            double[] val = model.Classify(new double[] { t.position.x, t.position.z });
 
-            Debug.Log(val);
+            //Debug.Log(val[0]);
 
-            if(val < 0)
+            if(val[0] < 0)
                 r.material.color = Color.red;
             else
                 r.material.color = Color.blue;
@@ -81,6 +81,10 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        toClassify = GameObject.FindGameObjectsWithTag("white");
+        reds = GameObject.FindGameObjectsWithTag("red");
+        blues = GameObject.FindGameObjectsWithTag("blue");
+
         startPosition = GetComponent<Transform>().position;
         startRotation = GetComponent<Transform>().rotation;
         elementPositionRef = toClassify[0].GetComponent<Transform>().position;

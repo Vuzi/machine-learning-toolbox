@@ -7,7 +7,6 @@
 #include <ctime>
 
 #include <plugin.h>
-#include <perceptronMultiLayer.h>
 
 using namespace std;
 
@@ -74,36 +73,39 @@ static void testPerceptron() {
 static void testPerceptronMultiLayer() {
     cout << "Tests perceptron mulit layer: " << endl;
 
-    for(int i = 0; i < 100; i++) {
+    //for(int i = 0; i < 100; i++) {
 
-        unsigned *l = new unsigned[4]{1, 3, 3, 1};
+        unsigned *l = new unsigned[3]{2, 3, 1};
 
-        perceptronMultiLayer p(2, l, 4);
+        perceptronMultiLayer p(2, l, 3);
 
-        // Training values
-        double *x = new double[8]{-1, 1,
+        // Training values (XOR)
+        double *x = new double[8]{0, 1,
+                                  1, 0,
                                   1, 1,
-                                  -1, -1,
-                                  1, -1};
-        double *y = new double[4]{-1,
+                                  0, 0};
+        double *y = new double[4]{ 1,
+                                   1,
                                   -1,
-                                  1,
-                                  1};
+                                  -1};
 
         // Train our model
-        p.train(0.1, x, y, 4, 500);
+        p.train(0.1, x, y, 4, 5000);
 
-        double *xTest1 = new double[2]{-1, 1}; // -1
-        double *xTest2 = new double[2]{1, 1}; // -1
-        double *xTest3 = new double[2]{-1, -1}; // 1
-        double *xTest4 = new double[2]{0, -2}; // Unknown (should be 1)
-        double *xTest5 = new double[2]{0, 1.5}; // Unknown (should be -1)
+        double *xTest1 = new double[2]{0, 1}; //  1
+        double *xTest2 = new double[2]{1, 0}; //  1
+        double *xTest3 = new double[2]{1, 1}; // -1
+        double *xTest4 = new double[2]{0, 0}; // -1
 
-        assert(p.classify(xTest1)[0] == -1);
-        assert(p.classify(xTest2)[0] == -1);
-        assert(p.classify(xTest3)[0] == 1);
-        assert(p.classify(xTest4)[0] == 1);
-        assert(p.classify(xTest5)[0] == -1);
+        cout << p.classify(xTest1)[0] << endl; // 1
+        cout << p.classify(xTest2)[0] << endl; // 1
+        cout << p.classify(xTest3)[0] << endl; // -1
+        cout << p.classify(xTest4)[0] << endl; // -1
+
+        assert(p.classify(xTest1)[0] > 0);
+        assert(p.classify(xTest2)[0] > 0);
+        assert(p.classify(xTest3)[0] < 0);
+        assert(p.classify(xTest4)[0] < 0);
 
         delete[] x;
         delete[] y;
@@ -111,24 +113,18 @@ static void testPerceptronMultiLayer() {
         delete[] xTest2;
         delete[] xTest3;
         delete[] xTest4;
-        delete[] xTest5;
-    }
+    //}
+    cout << "passed" << endl;
 }
 
 int main() {
     cout << "Tests" << endl;
 
-    testPerceptronMultiLayer();
-
-    return 0;
-
-    // TODO in some init method
-    srand((unsigned) time(NULL));
+    init();
 
     testRand();
     testPerceptron();
-
-    cout << "All test passed" << endl;
+    testPerceptronMultiLayer();
 
     return 0;
 }
