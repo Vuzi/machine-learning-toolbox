@@ -4,8 +4,8 @@ project(MachineLearningToolbox)
 # C++11 and force 64bit
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -m64")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-set(SOURCE_FILES src/plugin.cpp include/plugin.h include/perceptron.h src/perceptron.cpp include/perceptronMultiLayer.h
-        src/perceptronMultiLayer.cpp include/utils.h src/utils.cpp src/test.cpp)
+set(SOURCE_FILES src/plugin.cpp include/plugin.h include/perceptron.h src/perceptron.cpp include/multiLayerPerceptron.h
+        src/multiLayerPerceptron.cpp include/utils.h src/utils.cpp src/test.cpp)
 
 # Link to Eigen3
 SET(EIGEN3_INCLUDE_DIR "$ENV{EIGEN3_INCLUDE_DIR}")

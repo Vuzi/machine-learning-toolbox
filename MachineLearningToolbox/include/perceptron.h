@@ -11,7 +11,6 @@
 /**
  * Perceptron type
  */
-
 enum perceptronType {
     TYPE_HEAVISIDE  = 0, // Heaviside, or PLA (linear)
     TYPE_ROSENBLATT = 1, // Rosenblatt (linear)
@@ -25,15 +24,19 @@ typedef enum perceptronType perceptronType;
  */
 class perceptron {
     public:
-    	/**
-         * Classify the given values, and return the result
+        /**
+         * Perceptron constructor
          * @param  _n    The number of input of the perceptron. Note that every provided values
          *               in training or classification should be of the same size
          * @param  _type The type of algorithm to use internally. Note that this will condition
          *               which value can be returned by the classification and which values should
          *               be used with the training
-    	 */
+         */
         perceptron(unsigned _n, perceptronType _type);
+
+        /**
+         * Perceptron Destructor
+         */
         ~perceptron();
 
         /**

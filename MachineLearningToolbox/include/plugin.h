@@ -8,7 +8,7 @@
 #include <ctime>
 
 #include <perceptron.h>
-#include <perceptronMultiLayer.h>
+#include <multiLayerPerceptron.h>
 
 #ifdef _WIN32
     // Windows DLL export
@@ -31,10 +31,12 @@ EXPORT double perceptronClassify(perceptron* p, double* x);
 EXPORT double perceptronTrain(perceptron* p, double a, double* x, double* y, unsigned k, unsigned max);
 
 // Perceptron multi layer
-EXPORT perceptronMultiLayer* perceptronMLCreate(unsigned n, unsigned *l, unsigned ln, int type);
-EXPORT void perceptronMLDispose(perceptronMultiLayer* p);
+EXPORT multiLayerPerceptron* multiLayerPerceptronCreate(int *l, int ln, int type);
+EXPORT void multiLayerPerceptronDispose(multiLayerPerceptron* p);
 
-EXPORT double* perceptronMLClassify(perceptronMultiLayer* p, double* x);
-EXPORT double perceptronMLTrain(perceptronMultiLayer* p, double a, double* x, double* y, unsigned k, unsigned max);
+EXPORT int multiLayerPerceptronGetType(multiLayerPerceptron* p);
+
+EXPORT double* multiLayerPerceptronPropagate(multiLayerPerceptron* p, double* x);
+EXPORT double multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, unsigned k, unsigned max);
 
 #endif //PLUGIN_H

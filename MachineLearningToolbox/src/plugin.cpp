@@ -29,19 +29,24 @@ double perceptronTrain(perceptron* p, double a, double* x, double* y, unsigned k
     p->train(a, x, y, k, max);
 }
 
+
 // Multi layer perceptron
-perceptronMultiLayer* perceptronMLCreate(unsigned n, unsigned *l, unsigned ln, int type) {
-    return new perceptronMultiLayer(n, l, ln);
+multiLayerPerceptron* multiLayerPerceptronCreate(int *l, int ln, int type) {
+    return new multiLayerPerceptron(l, ln);
 }
 
-void perceptronMLDispose(perceptronMultiLayer* p) {
+void multiLayerPerceptronDispose(multiLayerPerceptron* p) {
     delete p;
 }
 
-double* perceptronMLClassify(perceptronMultiLayer* p, double* x) {
-    return p->classify(x);
+int multiLayerPerceptronGetType(multiLayerPerceptron* p) {
+    return MLP_TYPE_CLASSIFICATION;
 }
 
-double perceptronMLTrain(perceptronMultiLayer* p, double a, double* x, double* y, unsigned k, unsigned max) {
+double* multiLayerPerceptronPropagate(multiLayerPerceptron* p, double* x) {
+    return p->propagate(x);
+}
+
+double multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, int k, int max) {
     p->train(a, x, y, k, max);
 }
