@@ -9,7 +9,7 @@ void init() {
 }
 
 // Perceptron
-perceptron* perceptronCreate(unsigned n, int type) {
+perceptron* perceptronCreate(int n, int type) {
     return new perceptron(n, static_cast<perceptronType>(type));
 }
 
@@ -25,7 +25,7 @@ double perceptronClassify(perceptron* p, double* x) {
     return p->classify(x);
 }
 
-double perceptronTrain(perceptron* p, double a, double* x, double* y, unsigned k, unsigned max) {
+void perceptronTrain(perceptron* p, double a, double* x, double* y, int k, int max) {
     p->train(a, x, y, k, max);
 }
 
@@ -47,6 +47,6 @@ double* multiLayerPerceptronPropagate(multiLayerPerceptron* p, double* x) {
     return p->propagate(x);
 }
 
-double multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, int k, int max) {
-    p->train(a, x, y, k, max);
+void multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, int k, int max) {
+    p->train(a, 0.1, x, y, k, max);
 }

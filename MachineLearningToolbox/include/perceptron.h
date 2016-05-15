@@ -32,7 +32,7 @@ class perceptron {
          *               which value can be returned by the classification and which values should
          *               be used with the training
          */
-        perceptron(unsigned _n, perceptronType _type);
+        perceptron(int _n, perceptronType _type);
 
         /**
          * Perceptron Destructor
@@ -62,16 +62,16 @@ class perceptron {
          * @param k   The number of examples
          * @param max The maximum number of tests to performs
          */
-        void train(double a, double* x, double* y, unsigned k, unsigned max);
+        void train(double a, double* x, double* y, int k, int max);
 
     private:
-        void trainLinear(double a, double* x, double* y, unsigned k, unsigned max);
-        void trainRegression(double a, double* x, double* y, unsigned k, unsigned max);
+        void trainLinear(double a, double* x, double* y, int k, int max);
+        void trainRegression(double a, double* x, double* y, int k, int max);
 
-        double updateModelHeaviside(double a, double y, double* x);
-        double updateModelRosenblatt(double a, double yk, double y, double* x);
+        void updateModelHeaviside(double a, double y, double* x);
+        void updateModelRosenblatt(double a, double yk, double y, double* x);
 
-        unsigned n;
+        int n;
         double* w;
         enum perceptronType type;
 };

@@ -22,13 +22,13 @@
 EXPORT void init();
 
 // Perceptron
-EXPORT perceptron* perceptronCreate(unsigned n, int type);
+EXPORT perceptron* perceptronCreate(int n, int type);
 EXPORT void perceptronDispose(perceptron* p);
 
 EXPORT int perceptronGetType(perceptron* p);
 
 EXPORT double perceptronClassify(perceptron* p, double* x);
-EXPORT double perceptronTrain(perceptron* p, double a, double* x, double* y, unsigned k, unsigned max);
+EXPORT void perceptronTrain(perceptron* p, double a, double* x, double* y, int k, int max);
 
 // Perceptron multi layer
 EXPORT multiLayerPerceptron* multiLayerPerceptronCreate(int *l, int ln, int type);
@@ -37,6 +37,6 @@ EXPORT void multiLayerPerceptronDispose(multiLayerPerceptron* p);
 EXPORT int multiLayerPerceptronGetType(multiLayerPerceptron* p);
 
 EXPORT double* multiLayerPerceptronPropagate(multiLayerPerceptron* p, double* x);
-EXPORT double multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, unsigned k, unsigned max);
+EXPORT void multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, int k, int max);
 
 #endif //PLUGIN_H

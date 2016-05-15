@@ -53,7 +53,7 @@ class multiLayerPerceptron {
          * @param k   The number of examples
          * @param max The maximum number of tests to performs
          */
-        void train(double a, double *x, double *y, int k, int max);
+        void train(double a, double m, double *x, double *y, int k, int max);
 
     private:
         double*** weights; // Weights, by layer and by neuron
@@ -61,6 +61,7 @@ class multiLayerPerceptron {
 
         int ln;            // Number of layers
 
+        double*** lastChanges;
         double** computedValues; // Value of each layer after propagation
         double** trainValues;    // Error of each layer after backward propagation
 };

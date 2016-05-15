@@ -90,7 +90,7 @@ static void testPerceptronMultiLayer() {
         double *y = new double[4]{0, 1, 1, 0};
 
         // Train our model
-        p.train(1.0, x, y, 4, 500);
+        p.train(0.5, 0.1, x, y, 4, 1000);
 
         double *xTest1 = new double[2]{0, 1}; // 1
         double *xTest2 = new double[2]{1, 0}; // 1

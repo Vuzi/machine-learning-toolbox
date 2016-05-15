@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(MachineLearningToolbox)
 
 # C++11 and force 64bit
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -m64")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -m64 -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(SOURCE_FILES src/plugin.cpp include/plugin.h include/perceptron.h src/perceptron.cpp include/multiLayerPerceptron.h
         src/multiLayerPerceptron.cpp include/utils.h src/utils.cpp src/test.cpp)
@@ -21,7 +21,7 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories("include")
 
 # Lib
-add_executable(MachineLearningToolboxTest ${SOURCE_FILES})
+#add_executable(MachineLearningToolboxTest ${SOURCE_FILES})
 add_library(MachineLearningToolbox SHARED ${SOURCE_FILES})
 
 # Copy to the unity directory

@@ -4,13 +4,13 @@
 
 #include <perceptron.h>
 
-perceptron::perceptron(unsigned _n, perceptronType _type) {
+perceptron::perceptron(int _n, perceptronType _type) {
     n = _n;
     w = new double[n + 1];
     type = _type;
 
     // Init every weight with a rand between 0 an 1
-    for(unsigned i = 0; i <= n ; i++)
+    for(int i = 0; i <= n ; i++)
         w[i] = randValue(1, -1);
 }
 
@@ -26,7 +26,7 @@ double perceptron::classify(double *x) {
     double sum = 0.0;
 
     sum += w[0] * 1.0;
-    for(unsigned i = 0; i < n; i++)
+    for(int i = 0; i < n; i++)
         sum += w[i + 1] * x[i];
 
     switch (type) {
@@ -40,7 +40,7 @@ double perceptron::classify(double *x) {
     }
 }
 
-void perceptron::train(double a, double *x, double *y, unsigned k, unsigned max) {
+void perceptron::train(double a, double *x, double *y, int k, int max) {
     switch (type) {
         case TYPE_HEAVISIDE:
         case TYPE_ROSENBLATT:
@@ -52,14 +52,14 @@ void perceptron::train(double a, double *x, double *y, unsigned k, unsigned max)
     }
 }
 
-void perceptron::trainLinear(double a, double *x, double *y, unsigned k, unsigned max) {
-    unsigned i = 0;
+void perceptron::trainLinear(double a, double *x, double *y, int k, int max) {
+    int i = 0;
 
     while(i++ < max) {
         bool error = false;
 
         // Iter through each example
-        for(unsigned j = 0; j < k; j++) {
+        for(int j = 0; j < k; j++) {
             double* xk = x + j * n;   // Input array for example j
             double yk = y[j];         // Expected output for example j
             double yt = classify(xk); // Observed output for example j
@@ -78,7 +78,7 @@ void perceptron::trainLinear(double a, double *x, double *y, unsigned k, unsigne
     }
 }
 
-void perceptron::trainRegression(double a, double *x, double *y, unsigned k, unsigned max) {
+void perceptron::trainRegression(double a, double *x, double *y, int k, int max) {
     // Prepare y matrix
     Eigen::MatrixXd yMat(k, 1);
     for(int i = 0; i < k; i++)
@@ -100,14 +100,14 @@ void perceptron::trainRegression(double a, double *x, double *y, unsigned k, uns
     Eigen::Map<Eigen::MatrixXd>(w, n + 1, 1) = wMat;
 }
 
-double perceptron::updateModelHeaviside(double a, double y, double *x) {
+void perceptron::updateModelHeaviside(double a, double y, double *x) {
     w[0] = w[0] + a * y;
-    for(unsigned i = 0; i < n; i++)
+    for(int i = 0; i < n; i++)
         w[i + 1] = w[i + 1] + a * (y * x[i]);
 }
 
-double perceptron::updateModelRosenblatt(double a, double yk, double y, double *x) {
+void perceptron::updateModelRosenblatt(double a, double yk, double y, double *x) {
     w[0] = w[0] + a * (yk - y);
-    for(unsigned i = 0; i < n; i++)
+    for(int i = 0; i < n; i++)
         w[i + 1] = w[i + 1] + a * ((yk - y) * x[i]);
 }
