@@ -3,6 +3,8 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System;
 using UnityEngine.UI;
+using System.Linq;
+using System.Collections.Generic;
 
 public class LinearClassificationMultiLayer : MonoBehaviour {
 
@@ -15,25 +17,46 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
     GameObject[] reds;
     GameObject[] blues;
 
-    public void Reset() {
-        foreach(GameObject gameObject in toClassify) {
-            Transform t = gameObject.GetComponent<Transform>();
-            Renderer r = gameObject.GetComponent<Renderer>();
+    public InputField dimensions;
+    public InputField iterations;
+    public InputField learningStep;
 
-            r.material.color = Color.white;
-            t.position = new Vector3(t.position.x, elementPositionRef.y, t.position.z);
-        }
+    public void Reset() {
+        if(toClassify != null)
+            foreach(GameObject gameObject in toClassify) {
+                Transform t = gameObject.GetComponent<Transform>();
+                Renderer r = gameObject.GetComponent<Renderer>();
+
+                r.material.color = Color.white;
+            }
         GetComponent<Transform>().position = startPosition;
         GetComponent<Transform>().rotation = startRotation;
         timerText.text = "<none> ms";
+
+        toClassify = GameObject.FindGameObjectsWithTag("white");
+        reds = GameObject.FindGameObjectsWithTag("red");
+        blues = GameObject.FindGameObjectsWithTag("blue");
     }
 
     public void Classification() {
         Reset();
+
+        // Get infos
+        List<int> d = dimensions.text.Split(',').Select((Func<string, int>)int.Parse).ToList<int>();
+        d.Insert(0, 2); // Input layer
+        d.Add(1); // Output layer
+
+        int it = int.Parse(iterations.text);
+        float step = float.Parse(learningStep.text);
+
+        Debug.Log(d);
+        Debug.Log(it);
+        Debug.Log(step);
+
         var watch = System.Diagnostics.Stopwatch.StartNew();
 
         // Create the perceptron
-        PerceptronMultiLayer model = new PerceptronMultiLayer(new int[] { 2, 10, 10, 1 }, PerceptronType.HEAVISIDE);
+        PerceptronMultiLayer model = new PerceptronMultiLayer(d.ToArray(), PerceptronType.HEAVISIDE);
 
         // Create the training values
         double[,] values = new double[reds.Length + blues.Length, 2];
@@ -53,7 +76,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
             expectedValues[i + reds.Length] = 1;
         }
 
-        model.Train(0.001, values, expectedValues, 50000);
+        model.Train(step, values, expectedValues, it);
 
         // Use the perceptron
         foreach(GameObject gameObject in toClassify) {
@@ -61,9 +84,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
             Renderer r = gameObject.GetComponent<Renderer>();
 
             double[] val = model.Propagate(new double[] { t.position.x, t.position.z });
-
-            //Debug.Log(val[0]);
-
+            
             if(val[0] < 0)
                 r.material.color = Color.red;
             else
@@ -77,17 +98,13 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
 
     private Vector3 startPosition;
     private Quaternion startRotation;
-    private Vector3 elementPositionRef;
+    //private Vector3 elementPositionRef;
 
     // Use this for initialization
     void Start () {
-        toClassify = GameObject.FindGameObjectsWithTag("white");
-        reds = GameObject.FindGameObjectsWithTag("red");
-        blues = GameObject.FindGameObjectsWithTag("blue");
-
         startPosition = GetComponent<Transform>().position;
         startRotation = GetComponent<Transform>().rotation;
-        elementPositionRef = toClassify[0].GetComponent<Transform>().position;
+        //elementPositionRef = toClassify[0].GetComponent<Transform>().position;
     }
 
 	// Update is called once per frame

@@ -9,23 +9,30 @@ public class LinearClassificationLPA : MonoBehaviour {
     public Text timerText;
 
     // Sphere to classify
-    public GameObject[] toClassify;
+    GameObject[] toClassify;
 
     // Training set
-    public GameObject[] reds;
-    public GameObject[] blues;
+    GameObject[] reds;
+    GameObject[] blues;
 
     public void ResetClassification() {
-        foreach(GameObject gameObject in toClassify) {
-            Transform t = gameObject.GetComponent<Transform>();
-            Renderer r = gameObject.GetComponent<Renderer>();
+        if(toClassify != null)
+            foreach(GameObject gameObject in toClassify) {
+                Transform t = gameObject.GetComponent<Transform>();
+                Renderer r = gameObject.GetComponent<Renderer>();
 
-            r.material.color = Color.white;
-            t.position = new Vector3(t.position.x, elementPositionRef.y, t.position.z);
-        }
+                r.material.color = Color.white;
+                t.position = new Vector3(t.position.x, elementPositionRef.y, t.position.z);
+            }
+
         GetComponent<Transform>().position = startPosition;
         GetComponent<Transform>().rotation = startRotation;
         timerText.text = "<none> ms";
+
+        // Update values
+        toClassify = GameObject.FindGameObjectsWithTag("white");
+        reds = GameObject.FindGameObjectsWithTag("red");
+        blues = GameObject.FindGameObjectsWithTag("blue");
     }
 
     public void HeavisideClassification() {
@@ -171,7 +178,7 @@ public class LinearClassificationLPA : MonoBehaviour {
     void Start () {
         startPosition = GetComponent<Transform>().position;
         startRotation = GetComponent<Transform>().rotation;
-        elementPositionRef = toClassify[0].GetComponent<Transform>().position;
+        //elementPositionRef = toClassify[0].GetComponent<Transform>().position;
     }
 
 	// Update is called once per frame
