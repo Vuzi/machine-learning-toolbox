@@ -3,29 +3,24 @@
 //
 
 #include <multiLayerPerceptron.h>
-#include <cstring>
 
 multiLayerPerceptron::multiLayerPerceptron(int* _l, int _ln) {
     // Layers dimensions
     ln = _ln;
     layers = new int[ln];
-    memcpy(layers, _l, ln * sizeof(int));
-    layers[0] += 1; // Bias neuron
+    for(int l = 0; l < ln; l++)
+        layers[l] = _l[l] + 1;
 
     // Weights
-    weights = new double**[ln - 1]; // ln - 1 because the first layer doesn't have weights
-    lastChanges = new double**[ln - 1];
+    weights = new double**[ln];
     for(int l = 1; l < ln; l++) {
-        weights[l - 1] = new double*[layers[l]];
-        lastChanges[l - 1] = new double*[layers[l]];
+        weights[l] = new double*[layers[l]];
 
         for(int n = 0; n < layers[l]; n++) {
-            weights[l - 1][n] = new double[layers[l - 1]];
-            lastChanges[l - 1][n] = new double[layers[l - 1]];
+            weights[l][n] = new double[layers[l - 1]];
 
             for(int w = 0; w < layers[l - 1]; w++) {
-                weights[l - 1][n][w] = randValue(0.25, -0.25);
-                lastChanges[l - 1][n][w] = 0.0;
+                weights[l][n][w] = randValue(1, -1);
             }
         }
     }
@@ -36,104 +31,94 @@ multiLayerPerceptron::multiLayerPerceptron(int* _l, int _ln) {
         computedValues[l] = new double[layers[l]];
 
     // Errors
-    trainValues = new double*[ln];
+    delta = new double*[ln];
     for(int l = 0; l < ln; l++)
-        trainValues[l] = new double[layers[l]];
+        delta[l] = new double[layers[l]];
 }
 
 multiLayerPerceptron::~multiLayerPerceptron() {
     for(int l = 1; l < ln; l++) {
         for (int n = 0; n < layers[l]; n++) {
-            delete[] weights[l - 1][n];
-            delete[] lastChanges[l - 1][n];
+            delete[] weights[l][n];
         }
 
-        delete [] weights[l - 1];
-        delete [] lastChanges[l - 1];
+        delete [] weights[l];
     }
     delete [] weights;
-    delete [] lastChanges;
     delete [] layers;
 
     for(int l = 0; l < ln; l++) {
         delete [] computedValues[l];
-        delete [] trainValues[l];
+        delete [] delta[l];
     }
 
     delete [] computedValues;
-    delete [] trainValues;
+    delete [] delta;
 }
 
 double* multiLayerPerceptron::propagate(double *x) {
     // Input layer
-    computedValues[0][0] = 1.0; // Bias neuron always to 1
+    computedValues[0][0] = 1.0; // Bias neuron
     for(int n = 1; n < layers[0]; n++)
         computedValues[0][n] = x[n - 1];
 
     // Propagate to the hidden and output layers
     for(int l = 1; l < ln; l++) {
-        for(int n = 0; n < layers[l]; n++) {
+        computedValues[l][0] = 1.0; // Bias neuron
+
+        for(int n = 1; n < layers[l]; n++) {
             double sum = 0.0;
 
             for(int w = 0; w < layers[l - 1]; w++) {
-                sum += weights[l - 1][n][w] * computedValues[l - 1][w];
+                sum += weights[l][n][w] * computedValues[l - 1][w];
             }
 
             computedValues[l][n] = sigmoid(sum);
         }
     }
 
-    return computedValues[ln - 1]; // Return output computed value
+    return computedValues[ln - 1] + 1; // Return output computed value
 }
 
-void multiLayerPerceptron::train(double a, double m, double *x, double *y, int k, int max) {
+void multiLayerPerceptron::train(double a, double *x, double *y, int k, int max) {
     int count = 0;
 
-    // TODO compute error, and quit when the error is near zero
     while(count++ < max) {
         for (int ex = 0; ex < k; ex++) {
             double *inputs = x + ((layers[0] - 1) * ex); // Input values
-            double *outputs = y + (layers[ln - 1] * ex); // Output values
+            double *outputs = y + ((layers[ln - 1] - 1) * ex); // Output values
             propagate(inputs);
 
             // Error on the output layer
-            for (int n = 0; n < layers[ln - 1]; n++) {
+            for (int n = 1; n < layers[ln - 1]; n++) {
                 double xVal = computedValues[ln - 1][n];
 
-                trainValues[ln - 1][n] = dsigmoid(xVal) * (xVal - outputs[n]);
+                delta[ln - 1][n] = dsigmoid(xVal) * (xVal - outputs[n - 1]);
             }
 
             // Error on hidden layers
-            for (int l = ln - 2; l > 0; l--) {
+            for (int l = ln - 2; l >= 0; l--) {
                 for (int n = 0; n < layers[l]; n++) {
                     double sum = 0.0;
 
-                    for (int nPrev = 0; nPrev < layers[l + 1]; nPrev++) {
-                        sum += weights[l][nPrev][n] * trainValues[l + 1][nPrev];
+                    for (int nPrev = 1; nPrev < layers[l + 1]; nPrev++) {
+                        sum += weights[l + 1][nPrev][n] * delta[l + 1][nPrev];
                     }
 
-                    trainValues[l][n] = dsigmoid(computedValues[l][n]) * sum;
+                    delta[l][n] = dsigmoid(computedValues[l][n]) * sum;
                 }
             }
 
-            // TODO use momentum ?
             // Update weights
             for (int l = 1; l < ln; l++) {
                 for (int n = 0; n < layers[l]; n++) {
                     for (int nPrev = 0; nPrev < layers[l - 1]; nPrev++) {
-                        double change = trainValues[l][n] * computedValues[l - 1][nPrev];
-                        weights[l - 1][n][nPrev] -= a * change + m * lastChanges[l - 1][n][nPrev];
-                        lastChanges[l - 1][n][nPrev] = change;
+                        double change = computedValues[l - 1][nPrev] * delta[l][n];
+                        weights[l][n][nPrev] = weights[l][n][nPrev] - (a * change);
                     }
                 }
             }
 
-            // TODO use to decide to keep training or quit
-            //double error = 0.0;
-            //for(int n = 0; n < layers[ln - 1]; n++) {
-            //    double diff = outputs[n] - computedValues[ln - 1][n];
-            //    error += 0.5 * (diff * diff);
-            //}
         }
     }
 }

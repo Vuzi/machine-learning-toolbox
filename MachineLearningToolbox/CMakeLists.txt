@@ -21,7 +21,7 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories("include")
 
 # Lib
-#add_executable(MachineLearningToolboxTest ${SOURCE_FILES})
+add_executable(MachineLearningToolboxTest ${SOURCE_FILES})
 add_library(MachineLearningToolbox SHARED ${SOURCE_FILES})
 
 # Copy to the unity directory

@@ -48,5 +48,5 @@ double* multiLayerPerceptronPropagate(multiLayerPerceptron* p, double* x) {
 }
 
 void multiLayerPerceptronTrain(multiLayerPerceptron* p, double a, double* x, double* y, int k, int max) {
-    p->train(a, 0.1, x, y, k, max);
+    p->train(a, x, y, k, max);
 }

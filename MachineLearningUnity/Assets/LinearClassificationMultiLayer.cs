@@ -43,7 +43,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
             Transform t = reds[i].GetComponent<Transform>();
             values[i, 0] = t.position.x;
             values[i, 1] = t.position.z;
-            expectedValues[i] = 0;
+            expectedValues[i] = -1;
         }
 
         for(int i = 0; i < blues.Length; i++) {
@@ -53,7 +53,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
             expectedValues[i + reds.Length] = 1;
         }
 
-        model.Train(0.1, values, expectedValues, 50000);
+        model.Train(0.001, values, expectedValues, 50000);
 
         // Use the perceptron
         foreach(GameObject gameObject in toClassify) {
@@ -62,9 +62,9 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
 
             double[] val = model.Propagate(new double[] { t.position.x, t.position.z });
 
-            Debug.Log(val[0]);
+            //Debug.Log(val[0]);
 
-            if(val[0] < 0.5)
+            if(val[0] < 0)
                 r.material.color = Color.red;
             else
                 r.material.color = Color.blue;

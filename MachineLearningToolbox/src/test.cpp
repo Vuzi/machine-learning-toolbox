@@ -77,37 +77,43 @@ static void testPerceptronMultiLayer() {
     for(int i = 0; i < 100; i++) {
 
         bool hasFailed = false;
-        int *l = new int[3]{2, 2, 1};
+        int *l = new int[3]{2, 3, 1};
 
         multiLayerPerceptron p(l, 3);
 
-        // Training values (XOR)
-        double *x = new double[8]{1, 1,
-                                  1, 0,
-                                  0, 1,
-                                  0, 0};
+        cout << "init" << endl;
 
-        double *y = new double[4]{0, 1, 1, 0};
+        // Training values (XOR)
+        double *x = new double[8]{ 1,  1,
+                                   1, -1,
+                                  -1,  1,
+                                  -1, -1};
+
+        double *y = new double[4]{-1, 1, 1, -1};
 
         // Train our model
-        p.train(0.5, 0.1, x, y, 4, 1000);
+        p.train(0.1, x, y, 4, 500);
 
-        double *xTest1 = new double[2]{0, 1}; // 1
-        double *xTest2 = new double[2]{1, 0}; // 1
-        double *xTest3 = new double[2]{1, 1}; // 0
-        double *xTest4 = new double[2]{0, 0}; // 0
+        cout << "train" << endl;
+
+        double *xTest1 = new double[2]{-1, 1}; // 1
+        double *xTest2 = new double[2]{1, -1}; // 1
+        double *xTest3 = new double[2]{1, 1}; // -1
+        double *xTest4 = new double[2]{-1, -1}; // -1
 
         p.propagate(xTest3);
 
+        cout << "propagate" << endl;
+
         cout << p.propagate(xTest1)[0] << endl; // 1
         cout << p.propagate(xTest2)[0] << endl; // 1
-        cout << p.propagate(xTest3)[0] << endl; // 0
-        cout << p.propagate(xTest4)[0] << endl; // 0
+        cout << p.propagate(xTest3)[0] << endl; // -1
+        cout << p.propagate(xTest4)[0] << endl; // -1
 
-        if(!(p.propagate(xTest1)[0] > 0.5)) hasFailed = true;
-        if(!(p.propagate(xTest2)[0] > 0.5)) hasFailed = true;
-        if(!(p.propagate(xTest3)[0] < 0.5)) hasFailed = true;
-        if(!(p.propagate(xTest4)[0] < 0.5)) hasFailed = true;
+        if(!(p.propagate(xTest1)[0] > 0)) hasFailed = true;
+        if(!(p.propagate(xTest2)[0] > 0)) hasFailed = true;
+        if(!(p.propagate(xTest3)[0] < 0)) hasFailed = true;
+        if(!(p.propagate(xTest4)[0] < 0)) hasFailed = true;
 
         if(!hasFailed) {
             passed++;
@@ -122,6 +128,8 @@ static void testPerceptronMultiLayer() {
         delete[] xTest2;
         delete[] xTest3;
         delete[] xTest4;
+
+        cout << "clean done" << endl;
     }
 
     cout << passed << "/100 passed" << endl;
@@ -132,6 +140,7 @@ int main() {
 
     init();
 
+    //srand(42);
     testRand();
     testPerceptron();
     testPerceptronMultiLayer();
