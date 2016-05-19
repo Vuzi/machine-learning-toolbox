@@ -30,12 +30,18 @@ class multiLayerPerceptron {
          *            one output. At least 3 values should be passed
          * @param  ln The size of the l parameter
          */
-        multiLayerPerceptron(int *l, int ln);
+        multiLayerPerceptron(int *l, int ln, multiLayerPerceptronType type);
 
         /**
          * Neural network destructor
          */
         ~multiLayerPerceptron();
+
+        /**
+         * Return the type of the perceptron (classification or regression)
+         * @return   The output layer value after propagation
+         */
+        multiLayerPerceptronType getType();
 
         /**
          * Propagate the provided values into the neural network, and return the output of the last layer
@@ -55,7 +61,7 @@ class multiLayerPerceptron {
          */
         void train(double a, double *x, double *y, int k, int max);
 
-    private:
+private:
         double*** weights; // Weights, by layer and by neuron
         int* layers;       // Dimensions of layers
 
@@ -63,6 +69,8 @@ class multiLayerPerceptron {
 
         double** computedValues; // Value of each layer after propagation
         double** delta;    // Error of each layer after backward propagation
+
+        enum multiLayerPerceptronType type;
 };
 
 

@@ -32,7 +32,7 @@ void perceptronTrain(perceptron* p, double a, double* x, double* y, int k, int m
 
 // Multi layer perceptron
 multiLayerPerceptron* multiLayerPerceptronCreate(int *l, int ln, int type) {
-    return new multiLayerPerceptron(l, ln);
+    return new multiLayerPerceptron(l, ln, static_cast<multiLayerPerceptronType>(type));
 }
 
 void multiLayerPerceptronDispose(multiLayerPerceptron* p) {
@@ -40,7 +40,7 @@ void multiLayerPerceptronDispose(multiLayerPerceptron* p) {
 }
 
 int multiLayerPerceptronGetType(multiLayerPerceptron* p) {
-    return MLP_TYPE_CLASSIFICATION;
+    return p->getType();
 }
 
 double* multiLayerPerceptronPropagate(multiLayerPerceptron* p, double* x) {

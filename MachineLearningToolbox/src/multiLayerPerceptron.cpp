@@ -4,7 +4,10 @@
 
 #include <multiLayerPerceptron.h>
 
-multiLayerPerceptron::multiLayerPerceptron(int* _l, int _ln) {
+
+multiLayerPerceptron::multiLayerPerceptron(int* _l, int _ln, multiLayerPerceptronType _type) {
+    type = _type;
+
     // Layers dimensions
     ln = _ln;
     layers = new int[ln];
@@ -56,6 +59,10 @@ multiLayerPerceptron::~multiLayerPerceptron() {
     delete [] delta;
 }
 
+enum multiLayerPerceptronType multiLayerPerceptron::getType() {
+    return type;
+}
+
 double* multiLayerPerceptron::propagate(double *x) {
     // Input layer
     computedValues[0][0] = 1.0; // Bias neuron
@@ -73,7 +80,14 @@ double* multiLayerPerceptron::propagate(double *x) {
                 sum += weights[l][n][w] * computedValues[l - 1][w];
             }
 
-            computedValues[l][n] = sigmoid(sum);
+            if(l == ln - 1) {
+                // Output layer
+                if (type == MLP_TYPE_CLASSIFICATION)
+                    computedValues[l][n] = sigmoid(sum);
+                else if (type == MLP_TYPE_REGRESSION)
+                    computedValues[l][n] = sum;
+            }else
+                computedValues[l][n] = sigmoid(sum);
         }
     }
 
@@ -93,7 +107,10 @@ void multiLayerPerceptron::train(double a, double *x, double *y, int k, int max)
             for (int n = 1; n < layers[ln - 1]; n++) {
                 double xVal = computedValues[ln - 1][n];
 
-                delta[ln - 1][n] = dsigmoid(xVal) * (xVal - outputs[n - 1]);
+                if (type == MLP_TYPE_CLASSIFICATION)
+                    delta[ln - 1][n] = dsigmoid(xVal) * (xVal - outputs[n - 1]);
+                else if (type == MLP_TYPE_REGRESSION)
+                    delta[ln - 1][n] = xVal - outputs[n - 1];
             }
 
             // Error on hidden layers
@@ -122,3 +139,5 @@ void multiLayerPerceptron::train(double a, double *x, double *y, int k, int max)
         }
     }
 }
+
+

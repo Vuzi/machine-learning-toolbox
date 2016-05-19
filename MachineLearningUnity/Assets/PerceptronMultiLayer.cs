@@ -3,6 +3,11 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System;
 
+public enum PerceptronMultiLayerType : int {
+    CLASSIFICATION = 0,
+    REGRESSION = 1
+}
+
 public class PerceptronMultiLayer {
     [DllImport("libMachineLearningToolbox")]
     static extern void init();
@@ -21,7 +26,7 @@ public class PerceptronMultiLayer {
     private IntPtr p;
     private int outSize;
 
-    public PerceptronMultiLayer(int[] layers, PerceptronType type) {
+    public PerceptronMultiLayer(int[] layers, PerceptronMultiLayerType type) {
         init();
 
         p = multiLayerPerceptronCreate(layers, layers.Length, (int)type);

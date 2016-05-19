@@ -79,7 +79,7 @@ static void testPerceptronMultiLayer() {
         bool hasFailed = false;
         int *l = new int[3]{2, 3, 1};
 
-        multiLayerPerceptron p(l, 3);
+        multiLayerPerceptron p(l, 3, MLP_TYPE_CLASSIFICATION);
 
         cout << "init" << endl;
 
