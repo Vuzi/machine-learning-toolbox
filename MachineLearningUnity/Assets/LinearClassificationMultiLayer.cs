@@ -16,6 +16,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
     // Training set
     GameObject[] reds;
     GameObject[] blues;
+    GameObject[] greens;
 
     public InputField dimensions;
     public InputField iterations;
@@ -36,6 +37,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
         toClassify = GameObject.FindGameObjectsWithTag("white");
         reds = GameObject.FindGameObjectsWithTag("red");
         blues = GameObject.FindGameObjectsWithTag("blue");
+        greens = GameObject.FindGameObjectsWithTag("green");
     }
 
     public void Classification() {
@@ -44,7 +46,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
         // Get infos
         List<int> d = dimensions.text.Split(',').Select((Func<string, int>)int.Parse).ToList<int>();
         d.Insert(0, 2); // Input layer
-        d.Add(1); // Output layer
+        d.Add(3); // Output layer
 
         int it = int.Parse(iterations.text);
         float step = float.Parse(learningStep.text);
@@ -59,21 +61,34 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
         PerceptronMultiLayer model = new PerceptronMultiLayer(d.ToArray(), PerceptronType.HEAVISIDE);
 
         // Create the training values
-        double[,] values = new double[reds.Length + blues.Length, 2];
-        double[] expectedValues = new double[reds.Length + blues.Length];
+        double[,] values = new double[reds.Length + blues.Length + greens.Length, 2];
+        double[,] expectedValues = new double[reds.Length + blues.Length + greens.Length, 3];
 
         for(int i = 0; i < reds.Length; i++) {
             Transform t = reds[i].GetComponent<Transform>();
             values[i, 0] = t.position.x;
             values[i, 1] = t.position.z;
-            expectedValues[i] = -1;
+            expectedValues[i, 0] = 1;
+            expectedValues[i, 1] = -1;
+            expectedValues[i, 2] = -1;
         }
 
-        for(int i = 0; i < blues.Length; i++) {
+        for (int i = 0; i < blues.Length; i++) {
             Transform t = blues[i].GetComponent<Transform>();
             values[i + reds.Length, 0] = t.position.x;
             values[i + reds.Length, 1] = t.position.z;
-            expectedValues[i + reds.Length] = 1;
+            expectedValues[i + reds.Length, 0] = -1;
+            expectedValues[i + reds.Length, 1] = 1;
+            expectedValues[i + reds.Length, 2] = -1;
+        }
+
+        for (int i = 0; i < greens.Length; i++) {
+            Transform t = greens[i].GetComponent<Transform>();
+            values[i + reds.Length + blues.Length, 0] = t.position.x;
+            values[i + reds.Length + blues.Length, 1] = t.position.z;
+            expectedValues[i + reds.Length + blues.Length, 0] = -1;
+            expectedValues[i + reds.Length + blues.Length, 1] = -1;
+            expectedValues[i + reds.Length + blues.Length, 2] = 1;
         }
 
         model.Train(step, values, expectedValues, it);
@@ -85,10 +100,10 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
 
             double[] val = model.Propagate(new double[] { t.position.x, t.position.z });
             
-            if(val[0] < 0)
-                r.material.color = Color.red;
-            else
-                r.material.color = Color.blue;
+            r.material.color = new Color(
+                Convert.ToSingle((val[0] + 1) / 2),   // R
+                Convert.ToSingle((val[2] + 1) / 2),   // G
+                Convert.ToSingle((val[1] + 1) / 2));  // B
         }
 
         watch.Stop();

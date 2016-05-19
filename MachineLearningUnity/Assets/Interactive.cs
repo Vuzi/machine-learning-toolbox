@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class Interactive : MonoBehaviour {
 
     enum ElementType {
-        NONE, RED, BLUE
+        NONE, RED, BLUE, GREEN
     }
 
     ElementType type = ElementType.NONE;
@@ -21,6 +21,9 @@ public class Interactive : MonoBehaviour {
             Destroy(gameObject);
         }
         foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("blue")) {
+            Destroy(gameObject);
+        }
+        foreach (GameObject gameObject in GameObject.FindGameObjectsWithTag("green")) {
             Destroy(gameObject);
         }
     }
@@ -42,6 +45,12 @@ public class Interactive : MonoBehaviour {
         type = ElementType.RED;
 
         CreateOverlayElement(Color.red);
+    }
+
+    public void SelectGreen() {
+        type = ElementType.GREEN;
+
+        CreateOverlayElement(Color.green);
     }
 
     private void DestroyOverlayElement() {
@@ -83,6 +92,9 @@ public class Interactive : MonoBehaviour {
                 } else if (type == ElementType.RED) {
                     element.GetComponent<Renderer>().material.color = Color.red;
                     element.tag = "red";
+                } else if (type == ElementType.GREEN) {
+                    element.GetComponent<Renderer>().material.color = Color.green;
+                    element.tag = "green";
                 }
             } else {
                 // Move the overlay element

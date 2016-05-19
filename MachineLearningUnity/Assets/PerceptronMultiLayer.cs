@@ -40,11 +40,13 @@ public class PerceptronMultiLayer {
         return result;
     }
 
-    public void Train(double trainingStep, double[,] values, double[] expectedResults, int max) {
+    public void Train(double trainingStep, double[,] values, double[,] expectedResults, int max) {
         double[] tmpValues = new double[values.Length];
         System.Buffer.BlockCopy(values, 0, tmpValues, 0, sizeof(double) * values.Length);
+        double[] tmpExpectedResults = new double[expectedResults.Length];
+        System.Buffer.BlockCopy(expectedResults, 0, tmpExpectedResults, 0, sizeof(double) * expectedResults.Length);
 
-        multiLayerPerceptronTrain(p, trainingStep, tmpValues, expectedResults, expectedResults.Length, max);
+        multiLayerPerceptronTrain(p, trainingStep, tmpValues, tmpExpectedResults, expectedResults.Length / outSize, max);
     }
 }
 
