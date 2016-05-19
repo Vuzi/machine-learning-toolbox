@@ -8,29 +8,20 @@ public class LinearClassificationLPA : MonoBehaviour {
 
     public Text timerText;
 
-    // Sphere to classify
-    GameObject[] toClassify;
-
+    // Renderer
+    public int textureSize = 1024;
+    public GameObject renderer;
+    
     // Training set
     GameObject[] reds;
     GameObject[] blues;
 
     public void ResetClassification() {
-        if(toClassify != null)
-            foreach(GameObject gameObject in toClassify) {
-                Transform t = gameObject.GetComponent<Transform>();
-                Renderer r = gameObject.GetComponent<Renderer>();
+        renderer.GetComponent<Renderer>().material.mainTexture = null;
 
-                r.material.color = Color.white;
-                t.position = new Vector3(t.position.x, elementPositionRef.y, t.position.z);
-            }
-
-        GetComponent<Transform>().position = startPosition;
-        GetComponent<Transform>().rotation = startRotation;
         timerText.text = "<none> ms";
 
         // Update values
-        toClassify = GameObject.FindGameObjectsWithTag("white");
         reds = GameObject.FindGameObjectsWithTag("red");
         blues = GameObject.FindGameObjectsWithTag("blue");
     }
@@ -62,17 +53,31 @@ public class LinearClassificationLPA : MonoBehaviour {
 
         model.Train(0.1, values, expectedValues, 5000);
 
-        // Use the perceptron
-        foreach(GameObject gameObject in toClassify) {
-            Transform t = gameObject.GetComponent<Transform>();
-            Renderer r = gameObject.GetComponent<Renderer>();
+        // Texture generation
+        Transform tRenderer = renderer.GetComponent<Transform>();
+        double xWidth = tRenderer.localScale.x;
+        double yWidth = tRenderer.localScale.z;
 
-            if(model.Classify(new double[] { t.position.x, t.position.z }) < 0)
-                r.material.color = Color.red;
-            else
-                r.material.color = Color.blue;
+        double xDec = tRenderer.position.x;
+        double yDec = tRenderer.position.y;
+
+        var texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
+
+        for (int x = 0; x < textureSize; x++) {
+            for (int y = 0; y < textureSize; y++) {
+                double xValue = ((((double)x / textureSize) * xWidth) - (xWidth / 2)) + xDec;
+                double yValue = ((((double)y / textureSize) * yWidth) - (yWidth / 2)) + yDec;
+
+                if (model.Classify(new double[] { xValue, yValue }) < 0)
+                    texture.SetPixel(-x, -y, Color.red);
+                else
+                    texture.SetPixel(-x, -y, Color.blue);
+            }
         }
 
+        texture.Apply();
+        renderer.GetComponent<Renderer>().material.mainTexture = texture;
+        
         watch.Stop();
         var elapsedMs = watch.ElapsedMilliseconds;
         timerText.text = "" + elapsedMs + " ms";
@@ -105,17 +110,31 @@ public class LinearClassificationLPA : MonoBehaviour {
 
         model.Train(0.1, values, expectedValues, 5000);
 
-        // Use the perceptron
-        foreach(GameObject gameObject in toClassify) {
-            Transform t = gameObject.GetComponent<Transform>();
-            Renderer r = gameObject.GetComponent<Renderer>();
-            
-            if(model.Classify(new double[] { t.position.x, t.position.z }) == 0)
-                r.material.color = Color.red;
-            else
-                r.material.color = Color.blue;
+        // Texture generation
+        Transform tRenderer = renderer.GetComponent<Transform>();
+        double xWidth = tRenderer.localScale.x;
+        double yWidth = tRenderer.localScale.z;
+
+        double xDec = tRenderer.position.x;
+        double yDec = tRenderer.position.y;
+
+        var texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
+
+        for (int x = 0; x < textureSize; x++) {
+            for (int y = 0; y < textureSize; y++) {
+                double xValue = ((((double)x / textureSize) * xWidth) - (xWidth / 2)) + xDec;
+                double yValue = ((((double)y / textureSize) * yWidth) - (yWidth / 2)) + yDec;
+
+                if (model.Classify(new double[] { xValue, yValue }) == 0)
+                    texture.SetPixel(-x, -y, Color.red);
+                else
+                    texture.SetPixel(-x, -y, Color.blue);
+            }
         }
 
+        texture.Apply();
+        renderer.GetComponent<Renderer>().material.mainTexture = texture;
+        
         watch.Stop();
         var elapsedMs = watch.ElapsedMilliseconds;
         timerText.text = "" + elapsedMs + " ms";
@@ -148,38 +167,36 @@ public class LinearClassificationLPA : MonoBehaviour {
 
         model.Train(0.001, values, expectedValues, 500000);
 
-        // Use the perceptron
-        foreach(GameObject gameObject in toClassify) {
-            Transform t = gameObject.GetComponent<Transform>();
-            Renderer r = gameObject.GetComponent<Renderer>();
+        // Texture generation
+        Transform tRenderer = renderer.GetComponent<Transform>();
+        double xWidth = tRenderer.localScale.x;
+        double yWidth = tRenderer.localScale.z;
 
-            double val = model.Classify(new double[] { t.position.x, t.position.z });
+        double xDec = tRenderer.position.x;
+        double yDec = tRenderer.position.y;
 
-            val = (val + 1) / 2;
+        var texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
 
-            r.material.color = new Color((float)val, 0f, (float)(1.0 - val));
-            t.Translate(Vector3.up * (float)val);
+        for (int x = 0; x < textureSize; x++) {
+            for (int y = 0; y < textureSize; y++) {
+                double xValue = ((((double)x / textureSize) * xWidth) - (xWidth / 2)) + xDec;
+                double yValue = ((((double)y / textureSize) * yWidth) - (yWidth / 2)) + yDec;
+
+                double val = model.Classify(new double[] { xValue, yValue });
+                texture.SetPixel(-x, -y, new Color((float)val, 0f, (float)(1.0 - val)));
+            }
         }
+
+        texture.Apply();
+        renderer.GetComponent<Renderer>().material.mainTexture = texture;
 
         watch.Stop();
         var elapsedMs = watch.ElapsedMilliseconds;
         timerText.text = "" + elapsedMs + " ms";
-
-        // Move camera
-        GetComponent<Transform>().position = new Vector3(-6.3f, 2.8f, -5.3f);
-        GetComponent<Transform>().rotation = Quaternion.Euler(4.5f, 46f, -1f);
     }
-
-    private Vector3 startPosition;
-    private Quaternion startRotation;
-    private Vector3 elementPositionRef;
 
     // Use this for initialization
-    void Start () {
-        startPosition = GetComponent<Transform>().position;
-        startRotation = GetComponent<Transform>().rotation;
-        //elementPositionRef = toClassify[0].GetComponent<Transform>().position;
-    }
+    void Start () {}
 
 	// Update is called once per frame
 	void Update () {}

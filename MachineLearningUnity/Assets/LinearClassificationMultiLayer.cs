@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Runtime.InteropServices;
 using System;
 using UnityEngine.UI;
 using System.Linq;
@@ -9,9 +8,10 @@ using System.Collections.Generic;
 public class LinearClassificationMultiLayer : MonoBehaviour {
 
     public Text timerText;
-
-    // Sphere to classify
-    GameObject[] toClassify;
+    
+    // Renderer
+    public int textureSize = 512;
+    public GameObject renderer;
 
     // Training set
     GameObject[] reds;
@@ -23,37 +23,25 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
     public InputField learningStep;
 
     public void Reset() {
-        if(toClassify != null)
-            foreach(GameObject gameObject in toClassify) {
-                Transform t = gameObject.GetComponent<Transform>();
-                Renderer r = gameObject.GetComponent<Renderer>();
+        renderer.GetComponent<Renderer>().material.mainTexture = null;
 
-                r.material.color = Color.white;
-            }
-        GetComponent<Transform>().position = startPosition;
-        GetComponent<Transform>().rotation = startRotation;
         timerText.text = "<none> ms";
-
-        toClassify = GameObject.FindGameObjectsWithTag("white");
+        
         reds = GameObject.FindGameObjectsWithTag("red");
         blues = GameObject.FindGameObjectsWithTag("blue");
         greens = GameObject.FindGameObjectsWithTag("green");
     }
-
+    
     public void Classification() {
         Reset();
 
         // Get infos
-        List<int> d = dimensions.text.Split(',').Select((Func<string, int>)int.Parse).ToList<int>();
+        List<int> d = dimensions.text.Length == 0 ? new List<int>() : dimensions.text.Split(',').Select((Func<string, int>)int.Parse).ToList<int>();
         d.Insert(0, 2); // Input layer
         d.Add(3); // Output layer
 
         int it = int.Parse(iterations.text);
         float step = float.Parse(learningStep.text);
-
-        Debug.Log(d);
-        Debug.Log(it);
-        Debug.Log(step);
 
         var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -64,7 +52,7 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
         double[,] values = new double[reds.Length + blues.Length + greens.Length, 2];
         double[,] expectedValues = new double[reds.Length + blues.Length + greens.Length, 3];
 
-        for(int i = 0; i < reds.Length; i++) {
+        for (int i = 0; i < reds.Length; i++) {
             Transform t = reds[i].GetComponent<Transform>();
             values[i, 0] = t.position.x;
             values[i, 1] = t.position.z;
@@ -93,34 +81,41 @@ public class LinearClassificationMultiLayer : MonoBehaviour {
 
         model.Train(step, values, expectedValues, it);
 
-        // Use the perceptron
-        foreach(GameObject gameObject in toClassify) {
-            Transform t = gameObject.GetComponent<Transform>();
-            Renderer r = gameObject.GetComponent<Renderer>();
+        // Texture generation
+        Transform tRenderer = renderer.GetComponent<Transform>();
+        double xWidth = tRenderer.localScale.x;
+        double yWidth = tRenderer.localScale.z;
 
-            double[] val = model.Propagate(new double[] { t.position.x, t.position.z });
-            
-            r.material.color = new Color(
-                Convert.ToSingle((val[0] + 1) / 2),   // R
-                Convert.ToSingle((val[2] + 1) / 2),   // G
-                Convert.ToSingle((val[1] + 1) / 2));  // B
+        double xDec = tRenderer.position.x;
+        double yDec = tRenderer.position.y;
+
+        var texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
+
+
+        for (int x = 0; x < textureSize; x++) {
+            for (int y = 0; y < textureSize; y++) {
+                double xValue = ((((double)x / textureSize) * xWidth) - (xWidth / 2)) + xDec;
+                double yValue = ((((double)y / textureSize) * yWidth) - (yWidth / 2)) + yDec;
+
+                double[] val = model.Propagate(new double[] { xValue, yValue });
+
+                texture.SetPixel(-x, -y, new Color(
+                    Convert.ToSingle((val[0] + 1) / 2),    // R
+                    Convert.ToSingle((val[2] + 1) / 2),    // G
+                    Convert.ToSingle((val[1] + 1) / 2)));  // B
+            }
         }
+
+        texture.Apply();
+        renderer.GetComponent<Renderer>().material.mainTexture = texture;
 
         watch.Stop();
         var elapsedMs = watch.ElapsedMilliseconds;
         timerText.text = "" + elapsedMs + " ms";
     }
 
-    private Vector3 startPosition;
-    private Quaternion startRotation;
-    //private Vector3 elementPositionRef;
-
     // Use this for initialization
-    void Start () {
-        startPosition = GetComponent<Transform>().position;
-        startRotation = GetComponent<Transform>().rotation;
-        //elementPositionRef = toClassify[0].GetComponent<Transform>().position;
-    }
+    void Start () {}
 
 	// Update is called once per frame
 	void Update () {}
