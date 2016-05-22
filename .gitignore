@@ -103,7 +103,6 @@ fabric.properties
 ExportedObj/
 
 *.unityproj
-*.sln
 *.suo
 *.tmp
 *.user
